@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Label from '../atoms/Label';
 
 type Props = {
     value: number;
-    max: number;
+    max?: number;
     width?: string;
     height?: string;
     margin?: string;
@@ -18,14 +18,14 @@ type Props = {
     labelAlignment?: string;
 };
 
-const ProgressBar = ({ 
-        value, 
-        max,
-        width, 
-        height, 
-        margin, 
-        color, 
-        trackColor, 
+const ProgressBar = ({
+        value,
+        max = 100,
+        width,
+        height,
+        margin,
+        color,
+        trackColor,
         borderRadius,
         labelAlignment,
         labelSize,
@@ -35,90 +35,71 @@ const ProgressBar = ({
         transitionTimingFunction = "ease-in-out",
      }: Props) => {
 
-    const [completed, setCompleted] = useState(0);
+    const percentage = max > 0
+        ? Math.round(Math.min(Math.max(0, (value / max) * 100), 100))
+        : 0;
 
-    useEffect(() => {
-        const labelElement = document.getElementById("label");
-        const progressElement = document.getElementById("progress-wrap");
-
-        if (!value && labelElement && progressElement) {
-            progressElement.style.width = "0%";
-            labelElement.style.left = "0%";
-            setCompleted(0);
-            return;
-        }
-        
-        if (value > 100 && progressElement && labelElement) {
-            progressElement.style.width = "100%";
-            labelElement.style.left = "100%";
-            setCompleted(100);
-            return;
-        }
-
-        setCompleted(value);
-    }, [value]);
-
-    const bagroundStyle = {
+    const backgroundStyle: React.CSSProperties = {
         height: height || '15px',
-        width: `${width}`,
-        position: 'relative' as 'relative',
+        width: width,
+        position: 'relative',
         background: color || '#E5E7E9',
         overflow: 'hidden',
         borderRadius: borderRadius || '3px'
     };
 
-    const progressWrapStyle = {
-        width: `${value}%`,
+    const progressWrapStyle: React.CSSProperties = {
+        width: `${percentage}%`,
         transition: `width ${transitionDuration || '1s'} ${transitionTimingFunction}`,
         display: 'block',
         height: '100%'
     };
 
-    const progressStyle = {
+    const progressStyle: React.CSSProperties = {
         backgroundColor: trackColor || '#706af3',
         display: 'block',
         height: '100%'
     };
 
     return (
-        <div style={{ margin: `${margin}`, position: 'relative' }}>
+        <div style={{ margin: margin, position: 'relative' }}>
             {
-                labelVisible && labelAlignment === "top" ? 
-                    <Label 
-                        completed={completed} 
-                        value={value}
+                labelVisible && labelAlignment === "top" ?
+                    <Label
+                        completed={percentage}
+                        value={percentage}
                         labelSize={labelSize}
                         labelColor={labelColor}
                         transitionDuration={transitionDuration}
                         labelAlignment={labelAlignment}
-                    />  : <></>
+                    />  : null
             }
-            <div style={{ ...bagroundStyle }}>
-                <span id="progress-wrap" className="progress-wrap" style={{ ...progressWrapStyle }}>
-                    <span style={{...progressStyle }}>
+            <div style={backgroundStyle}>
+                <span style={progressWrapStyle}>
+                    <span style={progressStyle}>
                         {
-                            labelVisible && !labelAlignment ? 
-                                <Label 
-                                    completed={completed} 
-                                    value={value} 
+                            labelVisible && !labelAlignment ?
+                                <Label
+                                    completed={percentage}
+                                    value={percentage}
                                     labelSize={labelSize}
                                     labelColor={labelColor}
                                     transitionDuration={transitionDuration}
-                                /> : <></>
+                                /> : null
                         }
                     </span>
                 </span>
             </div>
             {
-                labelVisible && labelAlignment === "bottom" ? 
-                    <Label 
-                        completed={completed}
-                        value={value}
+                labelVisible && labelAlignment === "bottom" ?
+                    <Label
+                        completed={percentage}
+                        value={percentage}
                         labelSize={labelSize}
                         labelColor={labelColor}
                         transitionDuration={transitionDuration}
                         labelAlignment={labelAlignment}
-                    />  : <></>
+                    />  : null
             }
         </div>
     );
