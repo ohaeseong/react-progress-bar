@@ -3,12 +3,18 @@ node_modules/
 
 # dev
 src
+example
 .gitignore
+.context
+rollup.config.mjs
 rollup.config.js
 tsconfig.json
 webpack.config.js
 .babelrc
 public
 yarn-error.log
+package-lock.json
+yarn.lock
+
 # GIT
 .git
